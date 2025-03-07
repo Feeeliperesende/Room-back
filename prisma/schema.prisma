@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  AWAITING
+  FINISHED
+  CANCELED
+}
+
+model User {
+  id         String   @id @default(uuid())
+  first_name String
+  last_name  String
+  email      String   @unique
+  phone      String
+  password   String
+  terms      Boolean  @default(false)
+  token      String?
+  hash       String?
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  Todo       Todo[]
+
+  @@map("user")
+}
+
+model Todo {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  date            String
+  date_conclusion String?
+  status          Status   @default(AWAITING)
+  user_id         String
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  @@map("todo")
+}
